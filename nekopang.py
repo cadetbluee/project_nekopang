@@ -8,24 +8,24 @@ pygame.init() # pygame 모듈 초기화
 
 img_neko = [ 
     None,
-    pygame.image.load("neko1.png"),
-    pygame.image.load("neko2.png"),
-    pygame.image.load("neko3.png"),
-    pygame.image.load("neko4.png"),
-    pygame.image.load("neko5.png"),
-    pygame.image.load("neko6.png"),
-    pygame.image.load("neko_niku.png"),
+    pygame.image.load("images/neko1.png"),
+    pygame.image.load("images/neko2.png"),
+    pygame.image.load("images/neko3.png"),
+    pygame.image.load("images/neko4.png"),
+    pygame.image.load("images/neko5.png"),
+    pygame.image.load("images/neko6.png"),
+    pygame.image.load("images/neko_niku.png"),
 ]
 
-
-
+font_test = pygame.font.SysFont(None, 100)
+score=0
 
 map_y = 10
 map_x = 8
 display_width = 912
 display_height = 768
-bg = pygame.image.load("neko_bg.png")
-cursor = pygame.image.load("neko_cursor.png")
+bg = pygame.image.load("images/neko_bg.png")
+cursor = pygame.image.load("images/neko_cursor.png")
 
 neko = [[] for _ in range(map_y)]
 check = [[0 for _ in range(map_x)] for _ in range(map_y)]
@@ -47,6 +47,7 @@ class Mouse :
         self.map_x = map_x
 
     def get_mouse(self):
+        global score
         position = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         for y in range(map_y):
@@ -67,6 +68,8 @@ class Mouse :
                                 switch_neko()
                                 if not check_switch(y,x):
                                     switch_neko()
+                                else:
+                                    score+=10
                                 cursor_set()
 
                         if click[2] :
@@ -80,7 +83,7 @@ def switch_neko():
         for x in range(map_x):
             if check[y][x]==1:
                 stack.append((y,x))
-    print(stack)
+
     neko[stack[0][0]][stack[0][1]],neko[stack[1][0]][stack[1][1]]=neko[stack[1][0]][stack[1][1]],neko[stack[0][0]][stack[0][1]]
     ...
 
@@ -102,10 +105,11 @@ def check_neko(idx):
 # 상화좌우 3 조건 맞추면 7로 바꿔주기 
 def neko_pop():
     global neko
+
     for y in range(map_y):
         for x in range(map_x):
             if neko[y][x]==7:
-            
+                
                 neko[y][x]=0
 
     
@@ -166,6 +170,7 @@ def game(): # 메인 게임 함수
     m = Mouse(cursor,map_y,map_x)
     idx = 0
     while True:
+        
         tmr += 1 # 매 시간 1초 증가
         for event in pygame.event.get(): # 윈도운 X 누를 시 나오게끔
             if event.type == pygame.QUIT:
@@ -177,12 +182,14 @@ def game(): # 메인 게임 함수
         cursor_draw()
         if idx == 0:
             idx = check_neko(idx)
-        if 1 <= idx < 3 :
+        if 1 <= idx < 5 :
             idx += 1
-        if idx == 3 :
+        if idx == 5 :
             neko_pop()
             idx=0  
         drop_neko()
+        text = font_test.render(str(score), True, (255,255,255))
+        gameDisplay.blit(text, (700,110))
         pygame.display.update()
         clock.tick(20)
 
